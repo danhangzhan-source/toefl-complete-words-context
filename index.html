@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Complete the Words 练习工具</title>
+    <meta name="theme-color" content="#17665e" />
+    <title>Complete the Words 多词汇书练习</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -13,20 +14,26 @@
           <div class="brand">
             <div>
               <h1>Complete the Words</h1>
-              <p>新托福阅读词汇练习</p>
+              <p>新托福阅读语境填词</p>
             </div>
             <span id="wordTotal" class="pill">加载中</span>
           </div>
 
           <form id="setupForm" class="setup">
             <label>
-              起始序号
-              <input id="startIndex" type="number" min="1" value="1" required />
+              词汇书
+              <select id="bookSelect" required></select>
             </label>
-            <label>
-              练习数量
-              <input id="practiceCount" type="number" min="1" value="100" required />
-            </label>
+            <div class="range-fields">
+              <label>
+                起始序号
+                <input id="startIndex" type="number" min="1" value="1" required />
+              </label>
+              <label>
+                结束序号
+                <input id="endIndex" type="number" min="1" value="100" required />
+              </label>
+            </div>
             <label>
               显示释义
               <select id="hintMode">
@@ -41,6 +48,23 @@
               <button type="button" id="resumeBtn">继续上次</button>
             </div>
           </form>
+
+          <section class="import-panel">
+            <div class="section-title">
+              <h2>我的词汇书</h2>
+              <button type="button" id="importBtn">导入</button>
+            </div>
+            <input
+              id="bookFile"
+              class="visually-hidden"
+              type="file"
+              accept=".xlsx,.csv,.json"
+            />
+            <p id="importStatus" class="import-status">
+              可导入含“单词”和“例句”列的 Excel、CSV 或 JSON 文件。
+            </p>
+            <div id="localBookList" class="local-book-list"></div>
+          </section>
 
           <div class="stats">
             <div><strong id="doneStat">0</strong><span>已答</span></div>
@@ -60,25 +84,38 @@
         <section class="practice">
           <div class="topbar">
             <div>
-              <span id="rangeLabel">请选择练习范围</span>
+              <span id="rangeLabel">请选择词汇书和练习范围</span>
               <h2 id="progressLabel">未开始</h2>
             </div>
             <button type="button" id="finishBtn">交卷</button>
           </div>
 
           <div id="emptyState" class="empty-state">
-            <h2>选择练习范围后开始</h2>
-            <p>系统会抽取指定范围的单词并乱序呈现，每个单词都放在原词表例句中进行挖空练习。</p>
+            <h2>选择词汇书和范围后开始</h2>
+            <p>范围内的单词会乱序出现。直接在例句的下划线上输入缺失字母，填入字母后对应下划线会消失。</p>
           </div>
 
           <div id="quizCard" class="quiz-card hidden">
             <form id="answerForm" class="inline-answer">
-              <div class="word-line" id="promptText" role="button" tabindex="0" aria-label="阅读例句并填写单词缺失字母"></div>
-              <input id="answerInput" class="capture-input" type="text" autocomplete="off" spellcheck="false" />
+              <div
+                class="word-line"
+                id="promptText"
+                role="textbox"
+                tabindex="0"
+                aria-label="阅读例句并填写单词缺失字母"
+              ></div>
+              <input
+                id="answerInput"
+                class="capture-input"
+                type="text"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+              />
               <button type="submit" class="primary">提交</button>
             </form>
             <div id="hintText" class="hint"></div>
-            <div id="feedback" class="feedback"></div>
+            <div id="feedback" class="feedback" aria-live="polite"></div>
             <div class="nav-row">
               <button type="button" id="prevBtn">上一题</button>
               <button type="button" id="showAnswerBtn">显示答案</button>
@@ -96,6 +133,8 @@
         </section>
       </section>
     </main>
+    <script src="./jszip.min.js"></script>
+    <script src="./book-import.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
